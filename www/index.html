@@ -4,30 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RBC Company</title>
-
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Tahoma,Arial;background:#f1f4f8;color:#222}
-header{background:#0752a0;color:white;padding:20px;text-align:center;font-size:23px;font-weight:bold}
-nav{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;gap:3px;padding:5px}
-nav button{padding:13px 3px;border:0;background:#e8eef6;color:#0752a0;font-weight:bold;border-radius:6px}
+body{margin:0;background:#f1f4f8;font-family:Tahoma,Arial;color:#222}
+header{background:#0752a0;color:white;padding:22px;text-align:center;font-size:24px;font-weight:bold}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:7px;background:white}
+nav button{padding:13px 3px;border:0;border-radius:6px;background:#e8eef6;color:#0752a0;font-weight:bold}
 nav button.active{background:#0752a0;color:white}
-main{padding:12px;max-width:700px;margin:auto}
+main{padding:12px;max-width:750px;margin:auto}
 section{display:none}
 section.active{display:block}
-.card{background:white;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 6px #ddd}
+.card{background:white;padding:15px;margin:12px 0;border-radius:10px;box-shadow:0 2px 6px #ddd}
 input,select{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
 button{cursor:pointer}
 .primary{background:#0752a0;color:white;border:0;padding:12px;border-radius:6px;width:100%;margin-top:7px}
-.danger{background:#c62828;color:white;border:0;padding:7px;border-radius:5px}
+.danger{background:#c62828;color:white;border:0;padding:8px;border-radius:5px;margin:3px}
+.edit{background:#e5a000;color:white;border:0;padding:8px;border-radius:5px;margin:3px}
 .item{border-bottom:1px solid #ddd;padding:12px 3px}
-.stat{font-size:21px;color:#0752a0;font-weight:bold}
-.small{color:#777;font-size:12px}
+.stat{font-size:22px;color:#0752a0;font-weight:bold;margin-top:8px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 td,th{padding:9px;border:1px solid #ddd;text-align:center}
+h3{color:#0752a0}
 </style>
 </head>
-
 <body>
 
 <header>RBC COMPANY</header>
@@ -38,6 +37,7 @@ td,th{padding:9px;border:1px solid #ddd;text-align:center}
 <button onclick="show('products',this)">اجناس</button>
 <button onclick="show('sales',this)">فروش</button>
 <button onclick="show('ledger',this)">دفترکل</button>
+<button onclick="show('invoices',this)">فاکتورها</button>
 <button onclick="show('reports',this)">گزارشات</button>
 <button onclick="show('backup',this)">پشتیبان</button>
 </nav>
@@ -46,11 +46,11 @@ td,th{padding:9px;border:1px solid #ddd;text-align:center}
 
 <section id="home" class="active">
 <h3>داشبورد شرکت RBC</h3>
-<div class="card">مجموع فروش: <div class="stat" id="totalSales">0</div></div>
-<div class="card">مجموع پرداخت‌ها: <div class="stat" id="totalPayments">0</div></div>
-<div class="card">مجموع باقی‌داری مشتریان: <div class="stat" id="totalDebt">0</div></div>
-<div class="card">تعداد مشتریان: <div class="stat" id="customerCount">0</div></div>
-<div class="card">تعداد اجناس: <div class="stat" id="productCount">0</div></div>
+<div class="card">مجموع فروش<div class="stat" id="totalSales">0</div></div>
+<div class="card">مجموع پرداخت‌ها<div class="stat" id="totalPayments">0</div></div>
+<div class="card">باقی‌داری مشتریان<div class="stat" id="totalDebt">0</div></div>
+<div class="card">تعداد مشتریان<div class="stat" id="customerCount">0</div></div>
+<div class="card">تعداد اجناس<div class="stat" id="productCount">0</div></div>
 </section>
 
 <section id="customers">
@@ -59,42 +59,42 @@ td,th{padding:9px;border:1px solid #ddd;text-align:center}
 <input id="cname" placeholder="نام مشتری">
 <input id="cphone" placeholder="شماره تماس">
 <input id="caddress" placeholder="آدرس">
+<input type="hidden" id="editCustomerId">
 <button class="primary" onclick="addCustomer()">ثبت مشتری</button>
 </div>
-<div class="card" id="customerList"></div>
+<div class="card">
+<input id="customerSearch" placeholder="جستجوی مشتری" oninput="render()">
+<div id="customerList"></div>
+</div>
 </section>
 
 <section id="products">
-<h3>مدیریت اجناس</h3>
+<h3>مدیریت اجناس و انبار</h3>
 <div class="card">
 <input id="pname" placeholder="نام جنس">
 <input id="pcat" placeholder="دسته‌بندی">
 <input id="pprice" type="number" placeholder="قیمت فروش">
 <input id="pstock" type="number" placeholder="موجودی">
+<input id="pcost" type="number" placeholder="قیمت خرید واحد">
+<input type="hidden" id="editProductId">
 <button class="primary" onclick="addProduct()">ثبت جنس</button>
 </div>
-<div class="card" id="productList"></div>
+<div class="card">
+<input id="productSearch" placeholder="جستجوی جنس" oninput="render()">
+<div id="productList"></div>
+</div>
 </section>
 
 <section id="sales">
-<h3>ثبت فروش و صدور فاکتور</h3>
+<h3>ثبت فروش</h3>
 <div class="card">
-<label>انتخاب مشتری</label>
 <select id="saleCustomer"></select>
-
-<label>انتخاب جنس</label>
 <select id="saleProduct"></select>
-
-<input id="saleQty" type="number" value="1" min="1" placeholder="تعداد">
-
+<input id="saleQty" type="number" value="1" min="1">
 <button class="primary" onclick="addCart()">افزودن به فاکتور</button>
-
 <div id="cartList"></div>
-
-<h3>مجموع فاکتور: <span id="cartTotal">0</span></h3>
-
+<h3>مجموع: <span id="cartTotal">0</span></h3>
 <input id="salePaid" type="number" value="0" placeholder="مبلغ پرداختی">
-
 <button class="primary" onclick="finishSale()">ثبت فروش و صدور فاکتور</button>
 </div>
 </section>
@@ -107,6 +107,20 @@ td,th{padding:9px;border:1px solid #ddd;text-align:center}
 </div>
 </section>
 
+<section id="invoices">
+<h3>مدیریت فاکتورها</h3>
+<div class="card">
+<input id="invoiceSearch" placeholder="جستجوی شماره فاکتور یا نام مشتری" oninput="renderInvoices()">
+<select id="invoiceFilter" onchange="renderInvoices()">
+<option value="all">تمام فاکتورها</option>
+<option value="paid">پرداخت کامل</option>
+<option value="debt">دارای باقی‌داری</option>
+</select>
+<div id="invoiceList"></div>
+</div>
+<div class="card" id="invoiceDetails"></div>
+</section>
+
 <section id="reports">
 <h3>گزارشات مالی</h3>
 <div class="card" id="reportResult"></div>
@@ -115,9 +129,7 @@ td,th{padding:9px;border:1px solid #ddd;text-align:center}
 <section id="backup">
 <h3>پشتیبان‌گیری اطلاعات</h3>
 <div class="card">
-<p>برای حفظ اطلاعات شرکت، به‌صورت منظم نسخه پشتیبان تهیه کنید.</p>
-<button class="primary" onclick="backup()">دانلود نسخه پشتیبان</button>
-<br><br>
+<button class="primary" onclick="backup()">دانلود پشتیبان</button>
 <input type="file" id="restoreFile" accept=".json">
 <button class="primary" onclick="restore()">بازیابی اطلاعات</button>
 </div>
@@ -132,7 +144,16 @@ let db=JSON.parse(localStorage.getItem(KEY)||'null')||{
 customers:[],products:[],sales:[],payments:[],nextInvoice:1
 };
 
+db.customers=db.customers||[];
+db.products=db.products||[];
+db.sales=db.sales||[];
+db.payments=db.payments||[];
+db.nextInvoice=db.nextInvoice||1;
+
 let cart=[];
+
+function el(id){return document.getElementById(id)}
+function money(n){return Number(n||0).toLocaleString('en-US')}
 
 function save(){
 localStorage.setItem(KEY,JSON.stringify(db));
@@ -141,77 +162,146 @@ render();
 
 function show(id,btn){
 document.querySelectorAll('main section').forEach(x=>x.classList.remove('active'));
-document.getElementById(id).classList.add('active');
+el(id).classList.add('active');
 document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
 btn.classList.add('active');
 render();
 }
 
-function money(n){
-return Number(n||0).toLocaleString('en-US');
-}
-
 function addCustomer(){
-let name=cname.value.trim();
+let name=el('cname').value.trim();
 if(!name)return alert('نام مشتری را وارد کنید');
+
+let id=el('editCustomerId').value;
+
+if(id){
+let c=db.customers.find(x=>x.id==Number(id));
+if(c){
+c.name=name;
+c.phone=el('cphone').value;
+c.address=el('caddress').value;
+}
+}else{
 db.customers.push({
 id:Date.now(),name,
-phone:cphone.value,
-address:caddress.value
+phone:el('cphone').value,
+address:el('caddress').value
 });
-cname.value=cphone.value=caddress.value='';
+}
+
+el('cname').value='';
+el('cphone').value='';
+el('caddress').value='';
+el('editCustomerId').value='';
 save();
-alert('مشتری ثبت شد');
+alert('اطلاعات مشتری ذخیره شد');
+}
+
+function editCustomer(id){
+let c=db.customers.find(x=>x.id==id);
+if(!c)return;
+el('cname').value=c.name;
+el('cphone').value=c.phone||'';
+el('caddress').value=c.address||'';
+el('editCustomerId').value=c.id;
+show('customers',document.querySelectorAll('nav button')[1]);
+}
+
+function deleteCustomer(id){
+if(db.sales.some(s=>s.customerId==id)||db.payments.some(p=>p.customerId==id))
+return alert('این مشتری سابقه مالی دارد و قابل حذف نیست');
+if(!confirm('مشتری حذف شود؟'))return;
+db.customers=db.customers.filter(c=>c.id!=id);
+save();
 }
 
 function addProduct(){
-let name=pname.value.trim();
-let price=Number(pprice.value);
-let stock=Number(pstock.value);
-if(!name||price<=0||stock<0)return alert('اطلاعات جنس را درست وارد کنید');
+let name=el('pname').value.trim();
+let price=Number(el('pprice').value);
+let stock=Number(el('pstock').value);
+let cost=Number(el('pcost').value);
+
+if(!name||price<=0||stock<0||cost<0)
+return alert('اطلاعات جنس را درست وارد کنید');
+
+let id=el('editProductId').value;
+
+if(id){
+let p=db.products.find(x=>x.id==Number(id));
+if(p){
+p.name=name;
+p.category=el('pcat').value;
+p.price=price;
+p.stock=stock;
+p.cost=cost;
+}
+}else{
 db.products.push({
 id:Date.now(),name,
-category:pcat.value,
-price,stock
+category:el('pcat').value,
+price,stock,cost
 });
-pname.value=pcat.value=pprice.value=pstock.value='';
+}
+
+el('pname').value='';
+el('pcat').value='';
+el('pprice').value='';
+el('pstock').value='';
+el('pcost').value='';
+el('editProductId').value='';
 save();
-alert('جنس ثبت شد');
+alert('جنس ذخیره شد');
+}
+
+function editProduct(id){
+let p=db.products.find(x=>x.id==id);
+if(!p)return;
+el('pname').value=p.name;
+el('pcat').value=p.category||'';
+el('pprice').value=p.price;
+el('pstock').value=p.stock;
+el('pcost').value=p.cost||0;
+el('editProductId').value=p.id;
+show('products',document.querySelectorAll('nav button')[2]);
+}
+
+function deleteProduct(id){
+if(db.sales.some(s=>s.items.some(i=>i.productId==id)))
+return alert('این جنس در فاکتور ثبت شده و قابل حذف نیست');
+if(!confirm('جنس حذف شود؟'))return;
+db.products=db.products.filter(p=>p.id!=id);
+save();
 }
 
 function customerBalance(id){
-let bought=db.sales.filter(s=>s.customerId==id)
-.reduce((a,s)=>a+s.total,0);
-let paid=db.sales.filter(s=>s.customerId==id)
-.reduce((a,s)=>a+s.paid,0);
-paid+=db.payments.filter(p=>p.customerId==id)
-.reduce((a,p)=>a+p.amount,0);
+let bought=db.sales.filter(s=>s.customerId==id).reduce((a,s)=>a+s.total,0);
+let paid=db.sales.filter(s=>s.customerId==id).reduce((a,s)=>a+s.paid,0);
+paid+=db.payments.filter(p=>p.customerId==id).reduce((a,p)=>a+p.amount,0);
 return bought-paid;
 }
 
 function addCart(){
-let product=db.products.find(p=>p.id==Number(saleProduct.value));
-let qty=Number(saleQty.value);
-if(!product||qty<=0)return alert('جنس و تعداد را انتخاب کنید');
-if(qty>product.stock)return alert('موجودی جنس کافی نیست');
+let p=db.products.find(x=>x.id==Number(el('saleProduct').value));
+let qty=Number(el('saleQty').value);
+if(!p||qty<=0)return alert('جنس و تعداد را انتخاب کنید');
+if(qty>p.stock)return alert('موجودی کافی نیست');
 
 cart.push({
-productId:product.id,
-name:product.name,
-price:product.price,
-qty,
-total:product.price*qty
+productId:p.id,
+name:p.name,
+price:p.price,
+cost:p.cost||0,
+qty,total:p.price*qty
 });
 renderCart();
 }
 
 function renderCart(){
-cartList.innerHTML=cart.map((x,i)=>`
-<div class="item">
-${x.name} × ${x.qty} = ${money(x.total)}
-<button class="danger" onclick="removeCart(${i})">حذف</button>
-</div>`).join('');
-cartTotal.innerText=money(cart.reduce((a,x)=>a+x.total,0));
+el('cartList').innerHTML=cart.map((x,i)=>`
+<div class="item">${x.name} × ${x.qty} = ${money(x.total)}
+<button class="danger" onclick="removeCart(${i})">حذف</button></div>
+`).join('');
+el('cartTotal').innerText=money(cart.reduce((a,x)=>a+x.total,0));
 }
 
 function removeCart(i){
@@ -220,30 +310,28 @@ renderCart();
 }
 
 function finishSale(){
-let customerId=Number(saleCustomer.value);
+let customerId=Number(el('saleCustomer').value);
 if(!customerId)return alert('مشتری را انتخاب کنید');
-if(!cart.length)return alert('حداقل یک جنس اضافه کنید');
+if(!cart.length)return alert('جنس اضافه کنید');
 
 let total=cart.reduce((a,x)=>a+x.total,0);
-let paid=Number(salePaid.value);
-
+let paid=Number(el('salePaid').value);
 if(paid<0||paid>total)return alert('مبلغ پرداختی نامعتبر است');
 
 for(let item of cart){
 let p=db.products.find(x=>x.id==item.productId);
-if(!p||p.stock<item.qty)return alert('موجودی جنس تغییر کرده است');
+if(!p||p.stock<item.qty)return alert('موجودی کافی نیست');
 }
 
 cart.forEach(item=>{
-let p=db.products.find(x=>x.id==item.productId);
-p.stock-=item.qty;
+db.products.find(x=>x.id==item.productId).stock-=item.qty;
 });
 
 let invoice={
 id:Date.now(),
 number:db.nextInvoice++,
 customerId,
-items:[...cart],
+items:JSON.parse(JSON.stringify(cart)),
 total,paid,
 date:new Date().toISOString()
 };
@@ -251,9 +339,9 @@ date:new Date().toISOString()
 db.sales.push(invoice);
 save();
 cart=[];
-salePaid.value=0;
+el('salePaid').value=0;
 renderCart();
-alert('فاکتور شماره '+invoice.number+' ثبت شد');
+alert('فاکتور ثبت شد');
 printInvoice(invoice);
 }
 
@@ -264,11 +352,11 @@ if(!w)return alert('اجازه باز کردن صفحه فاکتور را بده
 
 w.document.write(`
 <html dir="rtl"><meta charset="UTF-8">
-<title>فاکتور RBC</title>
+<title>RBC Invoice</title>
 <body style="font-family:Tahoma;padding:25px">
 <h2 style="text-align:center">RBC COMPANY</h2>
-<h3>فاکتور فروش شماره ${s.number}</h3>
-<p>مشتری: ${c.name}</p>
+<h3>فاکتور شماره ${s.number}</h3>
+<p>مشتری: ${c?c.name:'نامشخص'}</p>
 <p>تاریخ: ${new Date(s.date).toLocaleDateString('fa-IR')}</p>
 <table border="1" width="100%" cellpadding="10">
 <tr><th>جنس</th><th>تعداد</th><th>قیمت</th><th>مجموع</th></tr>
@@ -278,22 +366,22 @@ ${s.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${money(x.price)}</
 <h3>پرداخت: ${money(s.paid)}</h3>
 <h3>باقی‌داری: ${money(s.total-s.paid)}</h3>
 <p style="text-align:center">تشکر از خرید شما</p>
-<button onclick="window.print()">چاپ / ذخیره PDF</button>
+<button onclick="window.print()">چاپ فاکتور</button>
 </body></html>`);
 w.document.close();
 }
 
 function showLedger(){
-let id=Number(ledgerCustomer.value);
+let id=Number(el('ledgerCustomer').value);
 let c=db.customers.find(x=>x.id==id);
-if(!c){ledgerResult.innerHTML='';return;}
+if(!c){el('ledgerResult').innerHTML='';return}
 
 let sales=db.sales.filter(x=>x.customerId==id);
 let payments=db.payments.filter(x=>x.customerId==id);
 let bought=sales.reduce((a,x)=>a+x.total,0);
 let paid=sales.reduce((a,x)=>a+x.paid,0)+payments.reduce((a,x)=>a+x.amount,0);
 
-ledgerResult.innerHTML=`
+el('ledgerResult').innerHTML=`
 <h3>${c.name}</h3>
 <p>مجموع خرید: ${money(bought)}</p>
 <p>مجموع پرداخت: ${money(paid)}</p>
@@ -306,12 +394,101 @@ ${sales.map(s=>`<div class="item">فاکتور ${s.number} | ${money(s.total)}</
 }
 
 function addPayment(id){
-let amount=Number(paymentAmount.value);
-if(amount<=0)return alert('مبلغ را درست وارد کنید');
+let amount=Number(el('paymentAmount').value);
+if(amount<=0)return alert('مبلغ نامعتبر است');
+if(amount>customerBalance(id))return alert('مبلغ بیشتر از باقی‌داری است');
+
 db.payments.push({id:Date.now(),customerId:id,amount,date:new Date().toISOString()});
 save();
 showLedger();
 alert('پرداخت ثبت شد');
+}
+
+function viewInvoice(id){
+let s=db.sales.find(x=>x.id==id);
+if(!s)return;
+let c=db.customers.find(x=>x.id==s.customerId);
+
+el('invoiceDetails').innerHTML=`
+<h3>فاکتور شماره ${s.number}</h3>
+<p>مشتری: ${c?c.name:'نامشخص'}</p>
+<table>
+<tr><th>جنس</th><th>تعداد</th><th>قیمت</th><th>مجموع</th></tr>
+${s.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.total)}</td></tr>`).join('')}
+</table>
+<h3>مجموع: ${money(s.total)}</h3>
+<p>پرداخت: ${money(s.paid)}</p>
+<p>باقی‌داری: ${money(s.total-s.paid)}</p>
+<button class="primary" onclick="printInvoice(${id})">چاپ مجدد فاکتور</button>`;
+}
+
+function renderInvoices(){
+let search=(el('invoiceSearch').value||'').toLowerCase();
+let filter=el('invoiceFilter').value;
+
+let list=db.sales.slice().sort((a,b)=>b.id-a.id);
+
+list=list.filter(s=>{
+let c=db.customers.find(x=>x.id==s.customerId);
+let name=c?c.name.toLowerCase():'';
+let match=String(s.number).includes(search)||name.includes(search);
+let status=filter=='all'||
+(filter=='paid'&&s.paid>=s.total)||
+(filter=='debt'&&s.paid<s.total);
+return match&&status;
+});
+
+el('invoiceList').innerHTML=list.map(s=>{
+let c=db.customers.find(x=>x.id==s.customerId);
+return `<div class="item">
+<strong>فاکتور ${s.number}</strong><br>
+مشتری: ${c?c.name:'نامشخص'}<br>
+مبلغ: ${money(s.total)}<br>
+باقی‌داری: ${money(s.total-s.paid)}
+<button class="primary" onclick="viewInvoice(${s.id})">مشاهده فاکتور</button>
+</div>`;
+}).join('')||'فاکتوری یافت نشد';
+}
+
+function render(){
+let total=db.sales.reduce((a,x)=>a+x.total,0);
+let paid=db.sales.reduce((a,x)=>a+x.paid,0)+db.payments.reduce((a,x)=>a+x.amount,0);
+
+el('totalSales').innerText=money(total);
+el('totalPayments').innerText=money(paid);
+el('totalDebt').innerText=money(db.customers.reduce((a,c)=>a+customerBalance(c.id),0));
+el('customerCount').innerText=db.customers.length;
+el('productCount').innerText=db.products.length;
+
+let cs=el('customerSearch').value.toLowerCase();
+el('customerList').innerHTML=db.customers.filter(c=>c.name.toLowerCase().includes(cs)).map(c=>`
+<div class="item"><strong>${c.name}</strong><br>
+${c.phone||''}<br>باقی‌داری: ${money(customerBalance(c.id))}
+<button class="edit" onclick="editCustomer(${c.id})">ویرایش</button>
+<button class="danger" onclick="deleteCustomer(${c.id})">حذف</button>
+</div>`).join('');
+
+let ps=el('productSearch').value.toLowerCase();
+el('productList').innerHTML=db.products.filter(p=>p.name.toLowerCase().includes(ps)).map(p=>`
+<div class="item"><strong>${p.name}</strong><br>
+قیمت: ${money(p.price)} | موجودی: ${p.stock}
+<button class="edit" onclick="editProduct(${p.id})">ویرایش</button>
+<button class="danger" onclick="deleteProduct(${p.id})">حذف</button>
+</div>`).join('');
+
+let opts='<option value="">انتخاب مشتری</option>'+db.customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+el('saleCustomer').innerHTML=opts;
+el('ledgerCustomer').innerHTML=opts;
+
+el('saleProduct').innerHTML='<option value="">انتخاب جنس</option>'+db.products.map(p=>`<option value="${p.id}">${p.name} (${p.stock})</option>`).join('');
+
+el('reportResult').innerHTML=`
+<p>تعداد فاکتورها: ${db.sales.length}</p>
+<p>مجموع فروش: ${money(total)}</p>
+<p>مجموع پرداخت: ${money(paid)}</p>
+<p>مجموع باقی‌داری: ${money(total-paid)}</p>
+`;
+renderInvoices();
 }
 
 function backup(){
@@ -324,20 +501,26 @@ URL.revokeObjectURL(a.href);
 }
 
 function restore(){
-let file=restoreFile.files[0];
+let file=el('restoreFile').files[0];
 if(!file)return alert('فایل پشتیبان را انتخاب کنید');
 let r=new FileReader();
 r.onload=()=>{
 try{
-let data=JSON.parse(r.result);
-if(!data.customers||!data.products||!data.sales)throw Error();
-if(!confirm('اطلاعات فعلی با اطلاعات پشتیبان جایگزین شود؟'))return;
-db=data;
+let d=JSON.parse(r.result);
+if(!d.customers||!d.products||!d.sales)throw Error();
+if(!confirm('اطلاعات فعلی جایگزین شود؟'))return;
+db=d;
 save();
 alert('بازیابی موفق بود');
-}catch(e){alert('فایل پشتیبان معتبر نیست');}
+}catch(e){alert('فایل پشتیبان نامعتبر است')}
 };
 r.readAsText(file);
+}
+
+render();
+</script>
+</body>
+</html>file);
 }
 
 function render(){
