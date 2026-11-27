@@ -5,77 +5,141 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RBC Company</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #eef6ff;
-      color: #0b2545;
-      margin: 0;
-      padding: 16px;
-    }
-    .box {
-      max-width: 600px;
-      margin: auto;
-      background: #ffffff;
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid #cce0ff;
-    }
-    h1 {
-      color: #0d5bd7;
-      margin-top: 0;
-      font-size: 20px;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border-radius: 8px;
-      box-sizing: border-box;
-      font-size: 14px;
-    }
-    input {
-      border: 1px solid #9ec5ff;
-    }
-    button {
-      background: #0d5bd7;
-      color: #ffffff;
-      border: 0;
-      font-weight: bold;
-    }
-    ul {
-      padding-right: 18px;
-      margin-top: 14px;
-    }
-    li {
-      margin-bottom: 6px;
-    }
+    body { font-family: sans-serif; background: #eef6ff; color: #0b2545; margin: 0; padding: 12px; }
+    .app { max-width: 640px; margin: auto; background: #fff; border-radius: 12px; border: 1px solid #cce0ff; overflow: hidden; }
+    .header { background: #0d5bd7; color: #fff; padding: 14px 16px; font-weight: bold; font-size: 18px; }
+    .nav { display: flex; background: #dbeafe; border-bottom: 1px solid #bfdbfe; }
+    .nav button { flex: 1; padding: 10px 6px; border: 0; background: transparent; color: #0b2545; font-weight: bold; cursor: pointer; }
+    .nav button.active { background: #0d5bd7; color: #fff; }
+    .content { padding: 16px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    input, textarea, button.primary { width: 100%; padding: 10px; margin-top: 8px; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+    input, textarea { border: 1px solid #9ec5ff; }
+    button.primary { background: #0d5bd7; color: #fff; border: 0; font-weight: bold; cursor: pointer; }
+    .card { border: 1px solid #dbeafe; background: #f8fbff; padding: 10px; border-radius: 8px; margin-top: 10px; }
+    .del-btn { background: #dc2626; color: #fff; border: 0; border-radius: 6px; padding: 5px 10px; margin-top: 6px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>RBC Company</h1>
-    <input id="noteInput" type="text" placeholder="ثبت اطلاعات یا یادداشت آفلاین..." />
-    <button onclick="addItem()">ذخیره روی گوشی</button>
-    <ul id="list"></ul>
+  <div class="app">
+    <div class="header">RBC Company</div>
+    <div class="nav">
+      <button id="btn-customers" class="active" onclick="showTab('customers')">مشتریان</button>
+      <button id="btn-notes" onclick="showTab('notes')">یادداشت‌ها</button>
+      <button id="btn-backup" onclick="showTab('backup')">پشتیبان</button>
+    </div>
+    <div class="content">
+      <div id="tab-customers" class="section active">
+        <input id="custName" type="text" placeholder="نام مشتری یا شرکت..." />
+        <input id="custPhone" type="text" placeholder="شماره تماس..." />
+        <textarea id="custNote" rows="2" placeholder="توضیحات یا سفارش..."></textarea>
+        <button class="primary" onclick="addCustomer()">ثبت مشتری (آفلاین)</button>
+        <div id="customerList"></div>
+      </div>
+
+      <div id="tab-notes" class="section">
+        <input id="noteText" type="text" placeholder="ثبت یادداشت آفلاین..." />
+        <button class="primary" onclick="addNote()">ذخیره یادداشت</button>
+        <div id="noteList"></div>
+      </div>
+
+      <div id="tab-backup" class="section">
+        <p>همه اطلاعات به‌صورت خودکار و آفلاین روی همین گوشی ذخیره می‌شوند.</p>
+        <textarea id="backupBox" rows="6" readonly></textarea>
+        <button class="primary" onclick="refreshBackup()">به‌روزرسانی متن پشتیبان</button>
+      </div>
+    </div>
   </div>
+
   <script>
-    const storageKey = "rbc_company_offline_data_v1";
-    function loadItems() {
-      const items = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      const ul = document.getElementById("list");
-      ul.innerHTML = items.map(item => `<li>${item}</li>`).join("");
+    const CUST_KEY = "rbc_customers_v1";
+    const NOTE_KEY = "rbc_notes_v1";
+
+    function showTab(name) {
+      document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".nav button").forEach(el => el.classList.remove("active"));
+      document.getElementById("tab-" + name).classList.add("active");
+      document.getElementById("btn-" + name).classList.add("active");
+      if (name === "backup") refreshBackup();
     }
-    function addItem() {
-      const input = document.getElementById("noteInput");
-      const text = input.value.trim();
-      if (!text) return;
-      const items = JSON.parse(localStorage.getItem(storageKey) || "[]");
-      items.unshift(text);
-      localStorage.setItem(storageKey, JSON.stringify(items));
-      input.value = "";
-      loadItems();
+
+    function getList(key) {
+      return JSON.parse(localStorage.getItem(key) || "[]");
     }
-    loadItems();
+
+    function saveList(key, list) {
+      localStorage.setItem(key, JSON.stringify(list));
+    }
+
+    function renderCustomers() {
+      const list = getList(CUST_KEY);
+      const box = document.getElementById("customerList");
+      box.innerHTML = list.map((c, i) => `
+        <div class="card">
+          <div><strong>${c.name}</strong> ${c.phone ? "- " + c.phone : ""}</div>
+          ${c.note ? `<div>${c.note}</div>` : ""}
+          <button class="del-btn" onclick="deleteItem('${CUST_KEY}', ${i}, renderCustomers)">حذف</button>
+        </div>
+      `).join("");
+    }
+
+    function addCustomer() {
+      const nameEl = document.getElementById("custName");
+      const phoneEl = document.getElementById("custPhone");
+      const noteEl = document.getElementById("custNote");
+      if (!nameEl.value.trim()) return;
+      const list = getList(CUST_KEY);
+      list.unshift({
+        name: nameEl.value.trim(),
+        phone: phoneEl.value.trim(),
+        note: noteEl.value.trim()
+      });
+      saveList(CUST_KEY, list);
+      nameEl.value = "";
+      phoneEl.value = "";
+      noteEl.value = "";
+      renderCustomers();
+    }
+
+    function renderNotes() {
+      const list = getList(NOTE_KEY);
+      const box = document.getElementById("noteList");
+      box.innerHTML = list.map((n, i) => `
+        <div class="card">
+          <div>${n}</div>
+          <button class="del-btn" onclick="deleteItem('${NOTE_KEY}', ${i}, renderNotes)">حذف</button>
+        </div>
+      `).join("");
+    }
+
+    function addNote() {
+      const el = document.getElementById("noteText");
+      if (!el.value.trim()) return;
+      const list = getList(NOTE_KEY);
+      list.unshift(el.value.trim());
+      saveList(NOTE_KEY, list);
+      el.value = "";
+      renderNotes();
+    }
+
+    function deleteItem(key, index, callback) {
+      const list = getList(key);
+      list.splice(index, 1);
+      saveList(key, list);
+      callback();
+    }
+
+    function refreshBackup() {
+      const data = {
+        customers: getList(CUST_KEY),
+        notes: getList(NOTE_KEY)
+      };
+      document.getElementById("backupBox").value = JSON.stringify(data, null, 2);
+    }
+
+    renderCustomers();
+    renderNotes();
   </script>
 </body>
 </html>
