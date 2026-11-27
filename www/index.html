@@ -1,145 +1,400 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RBC Company</title>
-  <style>
-    body { font-family: sans-serif; background: #eef6ff; color: #0b2545; margin: 0; padding: 12px; }
-    .app { max-width: 640px; margin: auto; background: #fff; border-radius: 12px; border: 1px solid #cce0ff; overflow: hidden; }
-    .header { background: #0d5bd7; color: #fff; padding: 14px 16px; font-weight: bold; font-size: 18px; }
-    .nav { display: flex; background: #dbeafe; border-bottom: 1px solid #bfdbfe; }
-    .nav button { flex: 1; padding: 10px 6px; border: 0; background: transparent; color: #0b2545; font-weight: bold; cursor: pointer; }
-    .nav button.active { background: #0d5bd7; color: #fff; }
-    .content { padding: 16px; }
-    .section { display: none; }
-    .section.active { display: block; }
-    input, textarea, button.primary { width: 100%; padding: 10px; margin-top: 8px; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-    input, textarea { border: 1px solid #9ec5ff; }
-    button.primary { background: #0d5bd7; color: #fff; border: 0; font-weight: bold; cursor: pointer; }
-    .card { border: 1px solid #dbeafe; background: #f8fbff; padding: 10px; border-radius: 8px; margin-top: 10px; }
-    .del-btn { background: #dc2626; color: #fff; border: 0; border-radius: 6px; padding: 5px 10px; margin-top: 6px; cursor: pointer; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RBC Company</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial;background:#f1f4f8;color:#222}
+header{background:#0752a0;color:white;padding:20px;text-align:center;font-size:23px;font-weight:bold}
+nav{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;gap:3px;padding:5px}
+nav button{padding:13px 3px;border:0;background:#e8eef6;color:#0752a0;font-weight:bold;border-radius:6px}
+nav button.active{background:#0752a0;color:white}
+main{padding:12px;max-width:700px;margin:auto}
+section{display:none}
+section.active{display:block}
+.card{background:white;padding:15px;margin:10px 0;border-radius:10px;box-shadow:0 2px 6px #ddd}
+input,select{width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:6px;font-size:15px}
+button{cursor:pointer}
+.primary{background:#0752a0;color:white;border:0;padding:12px;border-radius:6px;width:100%;margin-top:7px}
+.danger{background:#c62828;color:white;border:0;padding:7px;border-radius:5px}
+.item{border-bottom:1px solid #ddd;padding:12px 3px}
+.stat{font-size:21px;color:#0752a0;font-weight:bold}
+.small{color:#777;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:9px;border:1px solid #ddd;text-align:center}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="header">RBC Company</div>
-    <div class="nav">
-      <button id="btn-customers" class="active" onclick="showTab('customers')">مشتریان</button>
-      <button id="btn-notes" onclick="showTab('notes')">یادداشت‌ها</button>
-      <button id="btn-backup" onclick="showTab('backup')">پشتیبان</button>
-    </div>
-    <div class="content">
-      <div id="tab-customers" class="section active">
-        <input id="custName" type="text" placeholder="نام مشتری یا شرکت..." />
-        <input id="custPhone" type="text" placeholder="شماره تماس..." />
-        <textarea id="custNote" rows="2" placeholder="توضیحات یا سفارش..."></textarea>
-        <button class="primary" onclick="addCustomer()">ثبت مشتری (آفلاین)</button>
-        <div id="customerList"></div>
-      </div>
 
-      <div id="tab-notes" class="section">
-        <input id="noteText" type="text" placeholder="ثبت یادداشت آفلاین..." />
-        <button class="primary" onclick="addNote()">ذخیره یادداشت</button>
-        <div id="noteList"></div>
-      </div>
+<header>RBC COMPANY</header>
 
-      <div id="tab-backup" class="section">
-        <p>همه اطلاعات به‌صورت خودکار و آفلاین روی همین گوشی ذخیره می‌شوند.</p>
-        <textarea id="backupBox" rows="6" readonly></textarea>
-        <button class="primary" onclick="refreshBackup()">به‌روزرسانی متن پشتیبان</button>
-      </div>
-    </div>
-  </div>
+<nav>
+<button class="active" onclick="show('home',this)">داشبورد</button>
+<button onclick="show('customers',this)">مشتریان</button>
+<button onclick="show('products',this)">اجناس</button>
+<button onclick="show('sales',this)">فروش</button>
+<button onclick="show('ledger',this)">دفترکل</button>
+<button onclick="show('reports',this)">گزارشات</button>
+<button onclick="show('backup',this)">پشتیبان</button>
+</nav>
 
-  <script>
-    const CUST_KEY = "rbc_customers_v1";
-    const NOTE_KEY = "rbc_notes_v1";
+<main>
 
-    function showTab(name) {
-      document.querySelectorAll(".section").forEach(el => el.classList.remove("active"));
-      document.querySelectorAll(".nav button").forEach(el => el.classList.remove("active"));
-      document.getElementById("tab-" + name).classList.add("active");
-      document.getElementById("btn-" + name).classList.add("active");
-      if (name === "backup") refreshBackup();
-    }
+<section id="home" class="active">
+<h3>داشبورد شرکت RBC</h3>
+<div class="card">مجموع فروش: <div class="stat" id="totalSales">0</div></div>
+<div class="card">مجموع پرداخت‌ها: <div class="stat" id="totalPayments">0</div></div>
+<div class="card">مجموع باقی‌داری مشتریان: <div class="stat" id="totalDebt">0</div></div>
+<div class="card">تعداد مشتریان: <div class="stat" id="customerCount">0</div></div>
+<div class="card">تعداد اجناس: <div class="stat" id="productCount">0</div></div>
+</section>
 
-    function getList(key) {
-      return JSON.parse(localStorage.getItem(key) || "[]");
-    }
+<section id="customers">
+<h3>مدیریت مشتریان</h3>
+<div class="card">
+<input id="cname" placeholder="نام مشتری">
+<input id="cphone" placeholder="شماره تماس">
+<input id="caddress" placeholder="آدرس">
+<button class="primary" onclick="addCustomer()">ثبت مشتری</button>
+</div>
+<div class="card" id="customerList"></div>
+</section>
 
-    function saveList(key, list) {
-      localStorage.setItem(key, JSON.stringify(list));
-    }
+<section id="products">
+<h3>مدیریت اجناس</h3>
+<div class="card">
+<input id="pname" placeholder="نام جنس">
+<input id="pcat" placeholder="دسته‌بندی">
+<input id="pprice" type="number" placeholder="قیمت فروش">
+<input id="pstock" type="number" placeholder="موجودی">
+<button class="primary" onclick="addProduct()">ثبت جنس</button>
+</div>
+<div class="card" id="productList"></div>
+</section>
 
-    function renderCustomers() {
-      const list = getList(CUST_KEY);
-      const box = document.getElementById("customerList");
-      box.innerHTML = list.map((c, i) => `
-        <div class="card">
-          <div><strong>${c.name}</strong> ${c.phone ? "- " + c.phone : ""}</div>
-          ${c.note ? `<div>${c.note}</div>` : ""}
-          <button class="del-btn" onclick="deleteItem('${CUST_KEY}', ${i}, renderCustomers)">حذف</button>
-        </div>
-      `).join("");
-    }
+<section id="sales">
+<h3>ثبت فروش و صدور فاکتور</h3>
+<div class="card">
+<label>انتخاب مشتری</label>
+<select id="saleCustomer"></select>
 
-    function addCustomer() {
-      const nameEl = document.getElementById("custName");
-      const phoneEl = document.getElementById("custPhone");
-      const noteEl = document.getElementById("custNote");
-      if (!nameEl.value.trim()) return;
-      const list = getList(CUST_KEY);
-      list.unshift({
-        name: nameEl.value.trim(),
-        phone: phoneEl.value.trim(),
-        note: noteEl.value.trim()
-      });
-      saveList(CUST_KEY, list);
-      nameEl.value = "";
-      phoneEl.value = "";
-      noteEl.value = "";
-      renderCustomers();
-    }
+<label>انتخاب جنس</label>
+<select id="saleProduct"></select>
 
-    function renderNotes() {
-      const list = getList(NOTE_KEY);
-      const box = document.getElementById("noteList");
-      box.innerHTML = list.map((n, i) => `
-        <div class="card">
-          <div>${n}</div>
-          <button class="del-btn" onclick="deleteItem('${NOTE_KEY}', ${i}, renderNotes)">حذف</button>
-        </div>
-      `).join("");
-    }
+<input id="saleQty" type="number" value="1" min="1" placeholder="تعداد">
 
-    function addNote() {
-      const el = document.getElementById("noteText");
-      if (!el.value.trim()) return;
-      const list = getList(NOTE_KEY);
-      list.unshift(el.value.trim());
-      saveList(NOTE_KEY, list);
-      el.value = "";
-      renderNotes();
-    }
+<button class="primary" onclick="addCart()">افزودن به فاکتور</button>
 
-    function deleteItem(key, index, callback) {
-      const list = getList(key);
-      list.splice(index, 1);
-      saveList(key, list);
-      callback();
-    }
+<div id="cartList"></div>
 
-    function refreshBackup() {
-      const data = {
-        customers: getList(CUST_KEY),
-        notes: getList(NOTE_KEY)
-      };
-      document.getElementById("backupBox").value = JSON.stringify(data, null, 2);
-    }
+<h3>مجموع فاکتور: <span id="cartTotal">0</span></h3>
 
-    renderCustomers();
-    renderNotes();
-  </script>
+<input id="salePaid" type="number" value="0" placeholder="مبلغ پرداختی">
+
+<button class="primary" onclick="finishSale()">ثبت فروش و صدور فاکتور</button>
+</div>
+</section>
+
+<section id="ledger">
+<h3>دفترکل مشتریان</h3>
+<div class="card">
+<select id="ledgerCustomer" onchange="showLedger()"></select>
+<div id="ledgerResult"></div>
+</div>
+</section>
+
+<section id="reports">
+<h3>گزارشات مالی</h3>
+<div class="card" id="reportResult"></div>
+</section>
+
+<section id="backup">
+<h3>پشتیبان‌گیری اطلاعات</h3>
+<div class="card">
+<p>برای حفظ اطلاعات شرکت، به‌صورت منظم نسخه پشتیبان تهیه کنید.</p>
+<button class="primary" onclick="backup()">دانلود نسخه پشتیبان</button>
+<br><br>
+<input type="file" id="restoreFile" accept=".json">
+<button class="primary" onclick="restore()">بازیابی اطلاعات</button>
+</div>
+</section>
+
+</main>
+
+<script>
+const KEY='RBC_COMPANY_DATA_V1';
+
+let db=JSON.parse(localStorage.getItem(KEY)||'null')||{
+customers:[],products:[],sales:[],payments:[],nextInvoice:1
+};
+
+let cart=[];
+
+function save(){
+localStorage.setItem(KEY,JSON.stringify(db));
+render();
+}
+
+function show(id,btn){
+document.querySelectorAll('main section').forEach(x=>x.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+btn.classList.add('active');
+render();
+}
+
+function money(n){
+return Number(n||0).toLocaleString('en-US');
+}
+
+function addCustomer(){
+let name=cname.value.trim();
+if(!name)return alert('نام مشتری را وارد کنید');
+db.customers.push({
+id:Date.now(),name,
+phone:cphone.value,
+address:caddress.value
+});
+cname.value=cphone.value=caddress.value='';
+save();
+alert('مشتری ثبت شد');
+}
+
+function addProduct(){
+let name=pname.value.trim();
+let price=Number(pprice.value);
+let stock=Number(pstock.value);
+if(!name||price<=0||stock<0)return alert('اطلاعات جنس را درست وارد کنید');
+db.products.push({
+id:Date.now(),name,
+category:pcat.value,
+price,stock
+});
+pname.value=pcat.value=pprice.value=pstock.value='';
+save();
+alert('جنس ثبت شد');
+}
+
+function customerBalance(id){
+let bought=db.sales.filter(s=>s.customerId==id)
+.reduce((a,s)=>a+s.total,0);
+let paid=db.sales.filter(s=>s.customerId==id)
+.reduce((a,s)=>a+s.paid,0);
+paid+=db.payments.filter(p=>p.customerId==id)
+.reduce((a,p)=>a+p.amount,0);
+return bought-paid;
+}
+
+function addCart(){
+let product=db.products.find(p=>p.id==Number(saleProduct.value));
+let qty=Number(saleQty.value);
+if(!product||qty<=0)return alert('جنس و تعداد را انتخاب کنید');
+if(qty>product.stock)return alert('موجودی جنس کافی نیست');
+
+cart.push({
+productId:product.id,
+name:product.name,
+price:product.price,
+qty,
+total:product.price*qty
+});
+renderCart();
+}
+
+function renderCart(){
+cartList.innerHTML=cart.map((x,i)=>`
+<div class="item">
+${x.name} × ${x.qty} = ${money(x.total)}
+<button class="danger" onclick="removeCart(${i})">حذف</button>
+</div>`).join('');
+cartTotal.innerText=money(cart.reduce((a,x)=>a+x.total,0));
+}
+
+function removeCart(i){
+cart.splice(i,1);
+renderCart();
+}
+
+function finishSale(){
+let customerId=Number(saleCustomer.value);
+if(!customerId)return alert('مشتری را انتخاب کنید');
+if(!cart.length)return alert('حداقل یک جنس اضافه کنید');
+
+let total=cart.reduce((a,x)=>a+x.total,0);
+let paid=Number(salePaid.value);
+
+if(paid<0||paid>total)return alert('مبلغ پرداختی نامعتبر است');
+
+for(let item of cart){
+let p=db.products.find(x=>x.id==item.productId);
+if(!p||p.stock<item.qty)return alert('موجودی جنس تغییر کرده است');
+}
+
+cart.forEach(item=>{
+let p=db.products.find(x=>x.id==item.productId);
+p.stock-=item.qty;
+});
+
+let invoice={
+id:Date.now(),
+number:db.nextInvoice++,
+customerId,
+items:[...cart],
+total,paid,
+date:new Date().toISOString()
+};
+
+db.sales.push(invoice);
+save();
+cart=[];
+salePaid.value=0;
+renderCart();
+alert('فاکتور شماره '+invoice.number+' ثبت شد');
+printInvoice(invoice);
+}
+
+function printInvoice(s){
+let c=db.customers.find(x=>x.id==s.customerId);
+let w=window.open('','_blank');
+if(!w)return alert('اجازه باز کردن صفحه فاکتور را بدهید');
+
+w.document.write(`
+<html dir="rtl"><meta charset="UTF-8">
+<title>فاکتور RBC</title>
+<body style="font-family:Tahoma;padding:25px">
+<h2 style="text-align:center">RBC COMPANY</h2>
+<h3>فاکتور فروش شماره ${s.number}</h3>
+<p>مشتری: ${c.name}</p>
+<p>تاریخ: ${new Date(s.date).toLocaleDateString('fa-IR')}</p>
+<table border="1" width="100%" cellpadding="10">
+<tr><th>جنس</th><th>تعداد</th><th>قیمت</th><th>مجموع</th></tr>
+${s.items.map(x=>`<tr><td>${x.name}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.total)}</td></tr>`).join('')}
+</table>
+<h3>مجموع: ${money(s.total)}</h3>
+<h3>پرداخت: ${money(s.paid)}</h3>
+<h3>باقی‌داری: ${money(s.total-s.paid)}</h3>
+<p style="text-align:center">تشکر از خرید شما</p>
+<button onclick="window.print()">چاپ / ذخیره PDF</button>
+</body></html>`);
+w.document.close();
+}
+
+function showLedger(){
+let id=Number(ledgerCustomer.value);
+let c=db.customers.find(x=>x.id==id);
+if(!c){ledgerResult.innerHTML='';return;}
+
+let sales=db.sales.filter(x=>x.customerId==id);
+let payments=db.payments.filter(x=>x.customerId==id);
+let bought=sales.reduce((a,x)=>a+x.total,0);
+let paid=sales.reduce((a,x)=>a+x.paid,0)+payments.reduce((a,x)=>a+x.amount,0);
+
+ledgerResult.innerHTML=`
+<h3>${c.name}</h3>
+<p>مجموع خرید: ${money(bought)}</p>
+<p>مجموع پرداخت: ${money(paid)}</p>
+<h3>باقی‌داری: ${money(bought-paid)}</h3>
+<input type="number" id="paymentAmount" placeholder="مبلغ پرداخت جدید">
+<button class="primary" onclick="addPayment(${id})">ثبت پرداخت</button>
+<h4>فاکتورها</h4>
+${sales.map(s=>`<div class="item">فاکتور ${s.number} | ${money(s.total)}</div>`).join('')}
+`;
+}
+
+function addPayment(id){
+let amount=Number(paymentAmount.value);
+if(amount<=0)return alert('مبلغ را درست وارد کنید');
+db.payments.push({id:Date.now(),customerId:id,amount,date:new Date().toISOString()});
+save();
+showLedger();
+alert('پرداخت ثبت شد');
+}
+
+function backup(){
+let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+let a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download='RBC_Backup.json';
+a.click();
+URL.revokeObjectURL(a.href);
+}
+
+function restore(){
+let file=restoreFile.files[0];
+if(!file)return alert('فایل پشتیبان را انتخاب کنید');
+let r=new FileReader();
+r.onload=()=>{
+try{
+let data=JSON.parse(r.result);
+if(!data.customers||!data.products||!data.sales)throw Error();
+if(!confirm('اطلاعات فعلی با اطلاعات پشتیبان جایگزین شود؟'))return;
+db=data;
+save();
+alert('بازیابی موفق بود');
+}catch(e){alert('فایل پشتیبان معتبر نیست');}
+};
+r.readAsText(file);
+}
+
+function render(){
+let total=db.sales.reduce((a,x)=>a+x.total,0);
+let paid=db.sales.reduce((a,x)=>a+x.paid,0)+db.payments.reduce((a,x)=>a+x.amount,0);
+
+totalSales.innerText=money(total);
+totalPayments.innerText=money(paid);
+totalDebt.innerText=money(db.customers.reduce((a,c)=>a+customerBalance(c.id),0));
+customerCount.innerText=db.customers.length;
+productCount.innerText=db.products.length;
+
+customerList.innerHTML=db.customers.map(c=>`
+<div class="item">
+<strong>${c.name}</strong><br>
+${c.phone}<br>
+باقی‌داری: ${money(customerBalance(c.id))}
+<button class="danger" onclick="deleteCustomer(${c.id})">حذف</button>
+</div>`).join('');
+
+productList.innerHTML=db.products.map(p=>`
+<div class="item">
+<strong>${p.name}</strong><br>
+دسته: ${p.category}<br>
+قیمت: ${money(p.price)} | موجودی: ${p.stock}
+<button class="danger" onclick="deleteProduct(${p.id})">حذف</button>
+</div>`).join('');
+
+saleCustomer.innerHTML='<option value="">انتخاب مشتری</option>'+db.customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+ledgerCustomer.innerHTML='<option value="">انتخاب مشتری</option>'+db.customers.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+saleProduct.innerHTML='<option value="">انتخاب جنس</option>'+db.products.map(p=>`<option value="${p.id}">${p.name} (${p.stock})</option>`).join('');
+
+reportResult.innerHTML=`
+<p>تعداد فاکتورها: ${db.sales.length}</p>
+<p>مجموع فروش: ${money(total)}</p>
+<p>مجموع پرداخت: ${money(paid)}</p>
+<p>باقی‌داری: ${money(total-paid)}</p>`;
+}
+
+function deleteCustomer(id){
+if(!confirm('مشتری حذف شود؟'))return;
+if(db.sales.some(s=>s.customerId==id)||db.payments.some(p=>p.customerId==id))
+return alert('این مشتری سابقه مالی دارد و قابل حذف نیست');
+db.customers=db.customers.filter(c=>c.id!=id);
+save();
+}
+
+function deleteProduct(id){
+if(db.sales.some(s=>s.items.some(i=>i.productId==id)))
+return alert('این جنس در فاکتور ثبت شده و قابل حذف نیست');
+if(!confirm('جنس حذف شود؟'))return;
+db.products=db.products.filter(p=>p.id!=id);
+save();
+}
+
+render();
+</script>
+
 </body>
 </html>
