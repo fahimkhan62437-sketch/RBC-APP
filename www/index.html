@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RBC Company</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #eef6ff;
+      color: #0b2545;
+      margin: 0;
+      padding: 16px;
+    }
+    .box {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #cce0ff;
+    }
+    h1 {
+      color: #0d5bd7;
+      margin-top: 0;
+      font-size: 20px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    input {
+      border: 1px solid #9ec5ff;
+    }
+    button {
+      background: #0d5bd7;
+      color: #ffffff;
+      border: 0;
+      font-weight: bold;
+    }
+    ul {
+      padding-right: 18px;
+      margin-top: 14px;
+    }
+    li {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>RBC Company</h1>
+    <input id="noteInput" type="text" placeholder="ثبت اطلاعات یا یادداشت آفلاین..." />
+    <button onclick="addItem()">ذخیره روی گوشی</button>
+    <ul id="list"></ul>
+  </div>
+  <script>
+    const storageKey = "rbc_company_offline_data_v1";
+    function loadItems() {
+      const items = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      const ul = document.getElementById("list");
+      ul.innerHTML = items.map(item => `<li>${item}</li>`).join("");
+    }
+    function addItem() {
+      const input = document.getElementById("noteInput");
+      const text = input.value.trim();
+      if (!text) return;
+      const items = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      items.unshift(text);
+      localStorage.setItem(storageKey, JSON.stringify(items));
+      input.value = "";
+      loadItems();
+    }
+    loadItems();
+  </script>
+</body>
+</html>
